@@ -8,6 +8,16 @@ namespace tw::sdl {
     : m_window_title(window_title)
   {}
 
+  sdl_backend& sdl_backend::with_logical_size(SDL_Point size) {
+    m_window_size = size;
+    return *this;
+  }
+
+  sdl_backend& sdl_backend::with_fullscreen(bool fullscreen) {
+    m_window_fullscreen = fullscreen;
+    return *this;
+  }
+
   void sdl_backend::setup(tw::controlflow&) {
     SDL_Log("Initialize SDL");
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
@@ -22,12 +32,15 @@ namespace tw::sdl {
       std::exit(EXIT_FAILURE);
     }
 
+    int window_width = m_window_fullscreen ? dpy.w : m_window_size.x;
+    int window_height = m_window_fullscreen ? dpy.h : m_window_size.y;
+
     SDL_Log("Create Window");
     m_window = SDL_CreateWindow(
       m_window_title.c_str(),
-      SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-      dpy.w, dpy.h,
-      SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP
+      SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+      window_width, window_height,
+      SDL_WINDOW_SHOWN | (m_window_fullscreen ? SDL_WINDOW_FULLSCREEN : 0)
     );
     if (m_window == nullptr) {
       SDL_Log("Could not create window: %s", SDL_GetError());
@@ -46,6 +59,8 @@ namespace tw::sdl {
       SDL_Log("Could not create renderer: %s", SDL_GetError());
       std::exit(EXIT_FAILURE);
     }
+
+    SDL_RenderSetLogicalSize(m_renderer, m_window_size.x, m_window_size.y);
 
     SDL_Log("Create Application Surface");
     m_application_surface = SDL_CreateTexture(

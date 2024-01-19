@@ -19,6 +19,9 @@ namespace tw::sdl {
     public:
       sdl_backend(const std::string& window_title);
 
+      sdl_backend& with_logical_size(SDL_Point size);
+      sdl_backend& with_fullscreen(bool fullscreen);
+
       template <auto Candidate, typename... Args>
       sdl_backend& on_event(Args&&... args) {
         m_sink_event.template connect<Candidate>(std::forward<Args>(args)...);
@@ -38,6 +41,9 @@ namespace tw::sdl {
 
     private:
       std::string m_window_title;
+      SDL_Point m_window_size{1366, 768};
+      bool m_window_fullscreen{false};
+
       SDL_Window* m_window{nullptr};
       SDL_Renderer* m_renderer{nullptr};
       SDL_Texture* m_application_surface{nullptr};
