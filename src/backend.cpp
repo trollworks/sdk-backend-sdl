@@ -18,10 +18,25 @@ namespace tw::sdl {
     return *this;
   }
 
+  SDL_Renderer* sdl_backend::renderer() {
+    return m_renderer;
+  }
+
   void sdl_backend::setup(tw::controlflow&) {
     SDL_Log("Initialize SDL");
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
       SDL_Log("Could not initialize SDL: %s", SDL_GetError());
+      std::exit(EXIT_FAILURE);
+    }
+
+    SDL_Log("Initialize SDL Image");
+    Uint32 sdlimg_flags = 0
+      | IMG_INIT_PNG
+      | IMG_INIT_JPG
+      ;
+
+    if ((IMG_Init(sdlimg_flags) & sdlimg_flags) != sdlimg_flags) {
+      SDL_Log("Could not initialize SDL Image: %s", IMG_GetError());
       std::exit(EXIT_FAILURE);
     }
 
@@ -85,6 +100,9 @@ namespace tw::sdl {
 
     SDL_Log("Teardown Window");
     SDL_DestroyWindow(m_window);
+
+    SDL_Log("Teardown SDL Image");
+    IMG_Quit();
 
     SDL_Log("Teardown SDL");
     SDL_Quit();

@@ -34,6 +34,8 @@ namespace tw::sdl {
         return *this;
       }
 
+      SDL_Renderer* renderer();
+
       void setup(tw::controlflow& cf);
       void teardown();
       void poll_events(tw::controlflow& cf);
