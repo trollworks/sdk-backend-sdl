@@ -4,7 +4,8 @@
             "name": "Default",
             "includePath": [
                 "${workspaceFolder}/vendor/trollworks-sdk-core/include",
-                "${workspaceFolder}/vendor/SDL/upstream/include"
+                "${workspaceFolder}/vendor/SDL/upstream/include",
+                "${workspaceFolder}/vendor/SDL_image/upstream/include"
             ],
             "defines": [
                 "_DEBUG",

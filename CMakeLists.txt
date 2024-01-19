@@ -5,6 +5,7 @@ include(cmake/assert.cmake)
 include(cmake/config.cmake)
 
 add_subdirectory(vendor/SDL)
+add_subdirectory(vendor/SDL_image)
 
 file(GLOB_RECURSE TROLLWORKS_BACKEND_SDL_SOURCES
   ${PROJECT_SOURCE_DIR}/src/*.cpp
@@ -22,18 +23,21 @@ add_library(${PROJECT_NAME} STATIC
 if(WIN32)
   target_link_libraries(${PROJECT_NAME}
     SDL2-static
+    SDL2_image
     opengl32
     glu32
   )
 elseif(APPLE)
   target_link_libraries(${PROJECT_NAME}
     SDL2-static
+    SDL2_image
     opengl
     glu
   )
 elseif(UNIX)
   target_link_libraries(${PROJECT_NAME}
     SDL2-static
+    SDL2_image
     opengl
     glu
   )
@@ -42,11 +46,10 @@ else()
 endif()
 
 target_include_directories(${PROJECT_NAME}
-  PUBLIC
-    ${PROJECT_SOURCE_DIR}/include
-  PRIVATE
-    ${PROJECT_SOURCE_DIR}/vendor/trollworks-sdk-core/include
-    ${PROJECT_SOURCE_DIR}/vendor/SDL/upstream/include
+  PUBLIC ${PROJECT_SOURCE_DIR}/include
+  PRIVATE ${PROJECT_SOURCE_DIR}/vendor/trollworks-sdk-core/include
+  PRIVATE "$<TARGET_PROPERTY:SDL2-static,INTERFACE_INCLUDE_DIRECTORIES>"
+  PRIVATE "$<TARGET_PROPERTY:SDL2_image,INTERFACE_INCLUDE_DIRECTORIES>"
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE
