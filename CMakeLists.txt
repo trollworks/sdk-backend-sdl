@@ -4,6 +4,7 @@ project(trollworks-sdk-backend-sdl CXX)
 include(cmake/assert.cmake)
 include(cmake/config.cmake)
 
+add_subdirectory(vendor/nlohmann-json)
 add_subdirectory(vendor/SDL)
 add_subdirectory(vendor/SDL_image)
 
@@ -48,6 +49,7 @@ endif()
 target_include_directories(${PROJECT_NAME}
   PUBLIC ${PROJECT_SOURCE_DIR}/include
   PRIVATE ${PROJECT_SOURCE_DIR}/vendor/trollworks-sdk-core/include
+  PRIVATE "$<TARGET_PROPERTY:nlohmann_json::nlohmann_json,INTERFACE_INCLUDE_DIRECTORIES>"
   PRIVATE "$<TARGET_PROPERTY:SDL2-static,INTERFACE_INCLUDE_DIRECTORIES>"
   PRIVATE "$<TARGET_PROPERTY:SDL2_image,INTERFACE_INCLUDE_DIRECTORIES>"
 )

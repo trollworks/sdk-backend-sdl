@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/vendor/trollworks-sdk-core/include",
                 "${workspaceFolder}/vendor/SDL/upstream/include",
-                "${workspaceFolder}/vendor/SDL_image/upstream/include"
+                "${workspaceFolder}/vendor/SDL_image/upstream/include",
+                "${workspaceFolder}/vendor/nlohmann-json/upstream/single_include"
             ],
             "defines": [
                 "_DEBUG",

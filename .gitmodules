@@ -7,3 +7,6 @@
 [submodule "vendor/SDL_image/upstream"]
 	path = vendor/SDL_image/upstream
 	url = https://github.com/libsdl-org/SDL_image
+[submodule "vendor/nlohmann-json/upstream"]
+	path = vendor/nlohmann-json/upstream
+	url = https://github.com/nlohmann/json.git
