@@ -1,3 +1,6 @@
 [submodule "vendor/trollworks-sdk-core"]
 	path = vendor/trollworks-sdk-core
 	url = https://github.com/trollworks/sdk-core.git
+[submodule "vendor/SDL/upstream"]
+	path = vendor/SDL/upstream
+	url = https://github.com/libsdl-org/SDL
