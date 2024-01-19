@@ -1,6 +1,32 @@
 #include "../include/trollworks-backend-sdl/assets.hpp"
 
 namespace tw::sdl::aseprite {
+  spritesheet::spritesheet(spritesheet&& other) {
+    texture = other.texture;
+    size = other.size;
+    frames = std::move(other.frames);
+    other.texture = nullptr;
+  }
+
+  spritesheet::~spritesheet() {
+    if (texture != nullptr) {
+      SDL_DestroyTexture(texture);
+    }
+  }
+
+  std::optional<sprite> spritesheet::get_sprite(const std::string& name) const {
+    if (auto it = frames.find(name); it != frames.end()) {
+      return sprite{
+        texture,
+        it->second,
+        0,
+        0
+      };
+    }
+
+    return std::nullopt;
+  }
+
   spritesheet::loader_type::result_type spritesheet::loader_type::operator()(
     SDL_Renderer* renderer,
     SDL_RWops* sheet_data,
