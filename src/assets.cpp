@@ -1,5 +1,34 @@
 #include "../include/trollworks-backend-sdl/assets.hpp"
 
+namespace tw::sdl {
+  rwops_asset::rwops_asset(rwops_asset&& other) {
+    handle = other.handle;
+    other.handle = nullptr;
+  }
+
+  rwops_asset::~rwops_asset() {
+    if (handle != nullptr) {
+      SDL_RWclose(handle);
+    }
+  }
+
+  rwops_asset::loader_type::result_type rwops_asset::loader_type::operator()(
+    from_disk_tag,
+    const std::filesystem::path& path,
+    bool binary
+  ) const {
+    auto asset = rwops_asset{};
+
+    asset.handle = SDL_RWFromFile(path.string().c_str(), binary ? "rb" : "r");
+    if (asset.handle == nullptr) {
+      SDL_Log("Could not load asset: %s", SDL_GetError());
+      return nullptr;
+    }
+
+    return std::make_shared<rwops_asset>(std::move(asset));
+  }
+}
+
 namespace tw::sdl::aseprite {
   spritesheet::spritesheet(spritesheet&& other) {
     texture = other.texture;
