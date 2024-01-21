@@ -71,16 +71,16 @@ namespace tw::sdl::aseprite {
 
     try {
       sheet.size = SDL_Point{
-        sheet_meta["size"]["w"].get<int>(),
-        sheet_meta["size"]["h"].get<int>()
+        sheet_meta.at("meta").at("size").at("w").get<int>(),
+        sheet_meta.at("meta").at("size").at("h").get<int>()
       };
 
-      for (auto& [name, frame_meta] : sheet_meta["frames"].items()) {
+      for (auto& [name, frame_meta] : sheet_meta.at("frames").items()) {
         auto frame = SDL_Rect{
-          frame_meta["x"].get<int>(),
-          frame_meta["y"].get<int>(),
-          frame_meta["w"].get<int>(),
-          frame_meta["h"].get<int>()
+          frame_meta.at("x").get<int>(),
+          frame_meta.at("y").get<int>(),
+          frame_meta.at("w").get<int>(),
+          frame_meta.at("h").get<int>()
         };
         sheet.frames[name] = frame;
       }
