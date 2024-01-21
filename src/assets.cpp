@@ -77,10 +77,10 @@ namespace tw::sdl::aseprite {
 
       for (auto& [name, frame_meta] : sheet_meta.at("frames").items()) {
         auto frame = SDL_Rect{
-          frame_meta.at("x").get<int>(),
-          frame_meta.at("y").get<int>(),
-          frame_meta.at("w").get<int>(),
-          frame_meta.at("h").get<int>()
+          frame_meta.at("frame").at("x").get<int>(),
+          frame_meta.at("frame").at("y").get<int>(),
+          frame_meta.at("frame").at("w").get<int>(),
+          frame_meta.at("frame").at("h").get<int>()
         };
         sheet.frames[name] = frame;
       }
