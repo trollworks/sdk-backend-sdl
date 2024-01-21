@@ -82,8 +82,8 @@ namespace tw::sdl {
       m_renderer,
       dpy.format,
       SDL_TEXTUREACCESS_TARGET,
-      dpy.w,
-      dpy.h
+      window_width,
+      window_height
     );
     if (m_application_surface == nullptr) {
       SDL_Log("Could not create application surface: %s", SDL_GetError());
