@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.22)
 project(nlohmann_json)
 
-set(JSON_BuildTests OFF CACHE INTERNAL "")
+add_library(nlohmann_json INTERFACE)
+add_library(${PROJECT_NAME}::nlohmann_json ALIAS nlohmann_json)
 
-add_subdirectory(upstream)
+target_include_directories(nlohmann_json
+  INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include"
+)
