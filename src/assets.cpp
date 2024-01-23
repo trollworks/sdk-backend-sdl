@@ -14,14 +14,11 @@ namespace tw::sdl::aseprite {
     }
   }
 
-  std::optional<sprite> spritesheet::get_sprite(const std::string& name) const {
+  std::optional<spritesheet::frame_type> spritesheet::get_frame(
+    const std::string& name
+  ) const {
     if (auto it = frames.find(name); it != frames.end()) {
-      return sprite{
-        texture,
-        it->second,
-        0,
-        0
-      };
+      return std::make_pair(texture, it->second);
     }
 
     return std::nullopt;
