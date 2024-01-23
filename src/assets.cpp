@@ -58,7 +58,7 @@ namespace tw::sdl::aseprite {
           frame_meta.at("frame").at("w").get<int>(),
           frame_meta.at("frame").at("h").get<int>()
         };
-        auto duration = frame_meta.at("duration").get<float>();
+        auto duration = frame_meta.at("duration").get<float>() / 1000.0f; // ms -> s
 
         sheet.m_frames[name] = frame{
           .source = source,
