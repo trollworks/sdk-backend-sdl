@@ -2,23 +2,31 @@
 
 namespace tw::sdl::aseprite {
   spritesheet::spritesheet(spritesheet&& other) {
-    texture = other.texture;
-    size = other.size;
-    frames = std::move(other.frames);
-    other.texture = nullptr;
+    m_texture = other.m_texture;
+    m_size = other.m_size;
+    m_frames = std::move(other.m_frames);
+    other.m_texture = nullptr;
   }
 
   spritesheet::~spritesheet() {
-    if (texture != nullptr) {
-      SDL_DestroyTexture(texture);
+    if (m_texture != nullptr) {
+      SDL_DestroyTexture(m_texture);
     }
   }
 
-  std::optional<spritesheet::frame_type> spritesheet::get_frame(
+  SDL_Point spritesheet::get_size() const {
+    return m_size;
+  }
+
+  SDL_Texture* spritesheet::get_texture() const {
+    return m_texture;
+  }
+
+  std::optional<spritesheet::frame> spritesheet::get_frame(
     const std::string& name
   ) const {
-    if (auto it = frames.find(name); it != frames.end()) {
-      return std::make_pair(texture, it->second);
+    if (auto it = m_frames.find(name); it != m_frames.end()) {
+      return it->second;
     }
 
     return std::nullopt;
@@ -31,26 +39,31 @@ namespace tw::sdl::aseprite {
   ) const  {
     auto sheet = spritesheet{};
 
-    sheet.texture = IMG_LoadTexture_RW(renderer, sheet_data, 1);
-    if (sheet.texture == nullptr) {
+    sheet.m_texture = IMG_LoadTexture_RW(renderer, sheet_data, 1);
+    if (sheet.m_texture == nullptr) {
       SDL_Log("Could not load spritesheet: %s", SDL_GetError());
       return nullptr;
     }
 
     try {
-      sheet.size = SDL_Point{
+      sheet.m_size = SDL_Point{
         sheet_meta.at("meta").at("size").at("w").get<int>(),
         sheet_meta.at("meta").at("size").at("h").get<int>()
       };
 
       for (auto& [name, frame_meta] : sheet_meta.at("frames").items()) {
-        auto frame = SDL_Rect{
+        auto source = SDL_Rect{
           frame_meta.at("frame").at("x").get<int>(),
           frame_meta.at("frame").at("y").get<int>(),
           frame_meta.at("frame").at("w").get<int>(),
           frame_meta.at("frame").at("h").get<int>()
         };
-        sheet.frames[name] = frame;
+        auto duration = frame_meta.at("duration").get<float>();
+
+        sheet.m_frames[name] = frame{
+          .source = source,
+          .duration = duration
+        };
       }
     }
     catch (const std::exception& e) {
