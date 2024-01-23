@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "./SDL.hpp"
 
 namespace tw::sdl {
@@ -21,6 +23,18 @@ namespace tw::sdl {
 
     Uint32 layer;
     Uint32 order_in_layer;
+  };
+
+  struct animation {
+    struct frame {
+      SDL_Texture* texture;
+      SDL_Rect source;
+      float frame_duration;
+    };
+
+    std::vector<frame> frames;
+    Uint32 frame_index;
+    float frame_time;
   };
 
   struct camera {

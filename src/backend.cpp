@@ -1,7 +1,10 @@
 #include <cstdlib>
 
+#include <trollworks/jobs.hpp>
+
 #include "../include/trollworks-backend-sdl/backend.hpp"
 #include "../include/trollworks-backend-sdl/components.hpp"
+#include "../include/trollworks-backend-sdl/animator.hpp"
 
 namespace tw::sdl {
   sdl_backend::sdl_backend(const std::string& window_title)
@@ -89,6 +92,8 @@ namespace tw::sdl {
       SDL_Log("Could not create application surface: %s", SDL_GetError());
       std::exit(EXIT_FAILURE);
     }
+
+    job_manager::main().attach<animator>();
   }
 
   void sdl_backend::teardown() {
