@@ -21,6 +21,10 @@ namespace tw::sdl {
     return *this;
   }
 
+  SDL_Window* sdl_backend::window() {
+    return m_window;
+  }
+
   SDL_Renderer* sdl_backend::renderer() {
     return m_renderer;
   }
