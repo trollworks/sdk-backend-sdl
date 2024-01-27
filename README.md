@@ -15,12 +15,14 @@ This repository contains an SDL backend for the
 
 int SDL_main(int argc, char** argv) {
   auto backend = tw::sdl::sdl_backend("My SDL Window");
-  auto loop = tw::game_loop{}
+  auto loop = tw::game_loop{};
+
+  loop
     .with_fps(60)
     .with_ups(50)
-    .with_backend(backend);
+    .with_backend(backend)
+    .run();
 
-  loop.run();
   return 0;
 }
 ```
@@ -44,7 +46,9 @@ struct listener {
 };
 
 auto l = listener{};
-auto backend = sdl_backend("My Window Title")
+auto backend = sdl_backend{"My Window Title"};
+
+backend
   .on_event<&listener::on_event>(l)
   .on_gui<&listener::on_gui>(l);
 ```
