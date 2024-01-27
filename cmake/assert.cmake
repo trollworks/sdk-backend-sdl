@@ -1,5 +1,0 @@
-function(assert VAR)
-  if(NOT ${VAR})
-    message(FATAL_ERROR "\nAssertion failed: ${VAR} (value is '${${VAR}})\n")
-  endif()
-endfunction()
