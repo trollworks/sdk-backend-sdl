@@ -1,0 +1,26 @@
+{
+  "name": "trollworks-sdk-backend-sdl",
+  "version": "0.2.0",
+  "scripts": {
+    "build": "make all PREFIX=$SHIPP_DIST_DIR",
+    "install": "make install PREFIX=$SHIPP_DIST_DIR"
+  },
+  "dependencies": [
+    {
+      "name": "trollworks-sdk-core",
+      "url": "https://github.com/trollworks/sdk-core.git"
+    },
+    {
+      "name": "nlohmann-json",
+      "url": "https://github.com/trollworks/shipp-nlohmann_json.git"
+    },
+    {
+      "name": "SDL2",
+      "url": "https://github.com/trollworks/shipp-sdl.git"
+    },
+    {
+      "name": "SDL2_image",
+      "url": "https://github.com/trollworks/shipp-sdl_image.git"
+    }
+  ]
+}

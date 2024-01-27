@@ -3,10 +3,8 @@
         {
             "name": "Default",
             "includePath": [
-                "${workspaceFolder}/vendor/trollworks-sdk-core/include",
-                "${workspaceFolder}/vendor/SDL/upstream/include",
-                "${workspaceFolder}/vendor/SDL_image/upstream/include",
-                "${workspaceFolder}/vendor/nlohmann-json/include"
+                "${workspaceFolder}/.shipp/dist/include",
+                "${workspaceFolder}/.shipp/dist/include/SDL2"
             ],
             "defines": [
                 "_DEBUG",
