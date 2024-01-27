@@ -18,6 +18,7 @@ namespace tw::sdl {
 
     public:
       sdl_backend(const std::string& window_title);
+      sdl_backend(const sdl_backend&) = delete;
 
       sdl_backend& with_logical_size(SDL_Point size);
       sdl_backend& with_fullscreen(bool fullscreen);
