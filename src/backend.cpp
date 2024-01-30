@@ -143,6 +143,7 @@ namespace tw::sdl {
     auto backgrounds = registry.view<background, sprite>();
     auto sprites = registry.view<transform, sprite>();
 
+    cameras.use<camera>();
     backgrounds.use<sprite>();
     sprites.use<sprite>();
 
