@@ -5,6 +5,7 @@
 #include "../include/trollworks-backend-sdl/backend.hpp"
 #include "../include/trollworks-backend-sdl/components.hpp"
 #include "../include/trollworks-backend-sdl/animator.hpp"
+#include "../include/trollworks-backend-sdl/input/manager.hpp"
 
 namespace tw::sdl {
   sdl_backend::sdl_backend(const std::string& window_title)
@@ -120,7 +121,10 @@ namespace tw::sdl {
   void sdl_backend::poll_events(tw::controlflow& cf) {
     SDL_Event event;
 
+    input::manager::main().frame_begin();
+
     while (SDL_PollEvent(&event)) {
+      input::manager::main().process_event(event);
       m_sigh_event.publish(event, cf);
 
       if (event.type == SDL_QUIT) {
@@ -128,6 +132,9 @@ namespace tw::sdl {
         cf = tw::controlflow::exit;
       }
     }
+
+    auto& registry = scene_manager::main().registry();
+    input::manager::main().update(registry);
   }
 
   void sdl_backend::render() {
