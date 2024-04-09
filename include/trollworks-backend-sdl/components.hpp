@@ -17,12 +17,14 @@ namespace tw::sdl {
     bool repeat_y;
   };
 
+  struct ordering {
+    Uint32 layer;
+    Uint32 order_in_layer;
+  };
+
   struct sprite {
     SDL_Texture* texture;
     SDL_Rect source;
-
-    Uint32 layer;
-    Uint32 order_in_layer;
   };
 
   struct animation {
@@ -35,6 +37,11 @@ namespace tw::sdl {
     std::vector<frame> frames;
     Uint32 frame_index;
     float frame_time;
+  };
+
+  struct rect {
+    SDL_FRect rect;
+    SDL_Color color;
   };
 
   struct camera {

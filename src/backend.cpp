@@ -147,11 +147,11 @@ namespace tw::sdl {
     auto& registry = scene_manager::main().registry();
 
     auto cameras = registry.view<camera>();
-    auto backgrounds = registry.view<background, sprite>();
-    auto sprites = registry.view<transform, sprite>();
+    auto backgrounds = registry.view<background, sprite, ordering>();
+    auto drawables = registry.view<transform, ordering>();
 
-    backgrounds.use<sprite>();
-    sprites.use<sprite>();
+    backgrounds.use<ordering>();
+    drawables.use<ordering>();
 
     for (auto e_camera : cameras) {
       auto& c_camera = cameras.get<camera>(e_camera);
@@ -214,21 +214,40 @@ namespace tw::sdl {
         }
       }
 
-      for (auto e_sprite : sprites) {
-        auto& c_transform = sprites.get<transform>(e_sprite);
-        auto& c_sprite = sprites.get<sprite>(e_sprite);
+      for (auto e_drawable : drawables) {
+        auto& c_transform = drawables.get<transform>(e_drawable);
 
         auto screen_pos = c_camera.world_to_screen(c_transform.position);
         auto cam_scale = c_camera.scale();
 
-        SDL_FRect dest = {
-          .x = screen_pos.x,
-          .y = screen_pos.y,
-          .w = c_sprite.source.w * c_transform.scale.x * cam_scale.x,
-          .h = c_sprite.source.h * c_transform.scale.y * cam_scale.y
-        };
+        if (registry.all_of<sprite>(e_drawable)) {
+          auto& c_sprite = registry.get<sprite>(e_drawable);
 
-        SDL_RenderCopyF(m_renderer, c_sprite.texture, &c_sprite.source, &dest);
+          SDL_FRect dest = {
+            .x = screen_pos.x,
+            .y = screen_pos.y,
+            .w = c_sprite.source.w * c_transform.scale.x * cam_scale.x,
+            .h = c_sprite.source.h * c_transform.scale.y * cam_scale.y
+          };
+
+          SDL_RenderCopyF(m_renderer, c_sprite.texture, &c_sprite.source, &dest);
+        }
+        else if (registry.all_of<rect>(e_drawable)) {
+          auto& c_rect = registry.get<rect>(e_drawable);
+
+          SDL_FRect dest = {
+            .x = screen_pos.x,
+            .y = screen_pos.y,
+            .w = c_rect.rect.w * c_transform.scale.x * cam_scale.x,
+            .h = c_rect.rect.h * c_transform.scale.y * cam_scale.y
+          };
+
+          SDL_Color bak;
+          SDL_GetRenderDrawColor(m_renderer, &bak.r, &bak.g, &bak.b, &bak.a);
+          SDL_SetRenderDrawColor(m_renderer, c_rect.color.r, c_rect.color.g, c_rect.color.b, c_rect.color.a);
+          SDL_RenderFillRectF(m_renderer, &dest);
+          SDL_SetRenderDrawColor(m_renderer, bak.r, bak.g, bak.b, bak.a);
+        }
       }
     }
 
