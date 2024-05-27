@@ -3,6 +3,7 @@
 #include <trollworks/jobs.hpp>
 
 #include "../include/trollworks-backend-sdl/backend.hpp"
+#include "../include/trollworks-backend-sdl/logging.hpp"
 #include "../include/trollworks-backend-sdl/components.hpp"
 #include "../include/trollworks-backend-sdl/animator.hpp"
 #include "../include/trollworks-backend-sdl/input/manager.hpp"
@@ -31,34 +32,43 @@ namespace tw::sdl {
   }
 
   void sdl_backend::setup(tw::controlflow&) {
-    SDL_Log("Initialize SDL");
+    logging::logger().debug("Initialize SDL");
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-      SDL_Log("Could not initialize SDL: %s", SDL_GetError());
+      logging::logger().error(
+        "Could not initialize SDL",
+        logfmtxx::field{"reason", SDL_GetError()}
+      );
       std::exit(EXIT_FAILURE);
     }
 
-    SDL_Log("Initialize SDL Image");
+    logging::logger().debug("Initialize SDL Image");
     Uint32 sdlimg_flags = 0
       | IMG_INIT_PNG
       | IMG_INIT_JPG
       ;
 
     if ((IMG_Init(sdlimg_flags) & sdlimg_flags) != sdlimg_flags) {
-      SDL_Log("Could not initialize SDL Image: %s", IMG_GetError());
+      logging::logger().error(
+        "Could not initialize SDL Image",
+        logfmtxx::field{"reason", IMG_GetError()}
+      );
       std::exit(EXIT_FAILURE);
     }
 
-    SDL_Log("Detect Desktop Display Mode");
+    logging::logger().debug("Detect Desktop Display Mode");
     SDL_DisplayMode dpy;
     if (SDL_GetDesktopDisplayMode(0, &dpy) != 0) {
-      SDL_Log("Could not get desktop display mode: %s", SDL_GetError());
+      logging::logger().error(
+        "Could not get desktop display mode",
+        logfmtxx::field{"reason", SDL_GetError()}
+      );
       std::exit(EXIT_FAILURE);
     }
 
     int window_width = m_window_fullscreen ? dpy.w : m_window_size.x;
     int window_height = m_window_fullscreen ? dpy.h : m_window_size.y;
 
-    SDL_Log("Create Window");
+    logging::logger().debug("Create Window");
     m_window = SDL_CreateWindow(
       m_window_title.c_str(),
       SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -66,11 +76,14 @@ namespace tw::sdl {
       SDL_WINDOW_SHOWN | (m_window_fullscreen ? SDL_WINDOW_FULLSCREEN : 0)
     );
     if (m_window == nullptr) {
-      SDL_Log("Could not create window: %s", SDL_GetError());
+      logging::logger().error(
+        "Could not create window",
+        logfmtxx::field{"reason", SDL_GetError()}
+      );
       std::exit(EXIT_FAILURE);
     }
 
-    SDL_Log("Create Renderer");
+    logging::logger().debug("Create Renderer");
     m_renderer = SDL_CreateRenderer(
       m_window,
       -1,
@@ -79,13 +92,16 @@ namespace tw::sdl {
       SDL_RENDERER_TARGETTEXTURE
     );
     if (m_renderer == nullptr) {
-      SDL_Log("Could not create renderer: %s", SDL_GetError());
+      logging::logger().error(
+        "Could not create renderer",
+        logfmtxx::field{"reason", SDL_GetError()}
+      );
       std::exit(EXIT_FAILURE);
     }
 
     SDL_RenderSetLogicalSize(m_renderer, m_window_size.x, m_window_size.y);
 
-    SDL_Log("Create Application Surface");
+    logging::logger().debug("Create Application Surface");
     m_application_surface = SDL_CreateTexture(
       m_renderer,
       dpy.format,
@@ -94,7 +110,10 @@ namespace tw::sdl {
       window_height
     );
     if (m_application_surface == nullptr) {
-      SDL_Log("Could not create application surface: %s", SDL_GetError());
+      logging::logger().error(
+        "Could not create application surface",
+        logfmtxx::field{"reason", SDL_GetError()}
+      );
       std::exit(EXIT_FAILURE);
     }
 
@@ -102,19 +121,19 @@ namespace tw::sdl {
   }
 
   void sdl_backend::teardown() {
-    SDL_Log("Teardown Application Surface");
+    logging::logger().debug("Teardown Application Surface");
     SDL_DestroyTexture(m_application_surface);
 
-    SDL_Log("Teardown Renderer");
+    logging::logger().debug("Teardown Renderer");
     SDL_DestroyRenderer(m_renderer);
 
-    SDL_Log("Teardown Window");
+    logging::logger().debug("Teardown Window");
     SDL_DestroyWindow(m_window);
 
-    SDL_Log("Teardown SDL Image");
+    logging::logger().debug("Teardown SDL Image");
     IMG_Quit();
 
-    SDL_Log("Teardown SDL");
+    logging::logger().debug("Teardown SDL");
     SDL_Quit();
   }
 
@@ -128,7 +147,7 @@ namespace tw::sdl {
       m_sigh_event.publish(event, cf);
 
       if (event.type == SDL_QUIT) {
-        SDL_Log("Exit event received");
+        logging::logger().info("Exit event received");
         cf = tw::controlflow::exit;
       }
     }
