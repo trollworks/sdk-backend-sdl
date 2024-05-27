@@ -118,6 +118,41 @@ namespace tw::sdl {
     }
 
     job_manager::main().attach<animator>();
+
+    auto& registry = scene_manager::main().registry();
+    registry.on_construct<drawable>().connect<&sdl_backend::on_construct_drawable>(this);
+    registry.on_destroy<drawable>().connect<&sdl_backend::on_destroy_drawable>(this);
+  }
+
+  void sdl_backend::on_construct_drawable(entt::registry& registry, entt::entity entity) {
+    SDL_RendererInfo info;
+    SDL_GetRendererInfo(m_renderer, &info);
+
+    auto& c_drawable = registry.get<drawable>(entity);
+    c_drawable.target = SDL_CreateTexture(
+      m_renderer,
+      info.texture_formats[0], // there is always at least one format
+      SDL_TEXTUREACCESS_TARGET,
+      c_drawable.box.w,
+      c_drawable.box.h
+    );
+
+    if (c_drawable.target == nullptr) {
+      logging::logger().error(
+        "Could not create texture",
+        logfmtxx::field{"reason", SDL_GetError()},
+        logfmtxx::field{"entity", static_cast<ENTT_ID_TYPE>(entity)}
+      );
+    }
+  }
+
+  void sdl_backend::on_destroy_drawable(entt::registry& registry, entt::entity entity) {
+    auto& c_drawable = registry.get<drawable>(entity);
+
+    if (c_drawable.target != nullptr) {
+      SDL_DestroyTexture(c_drawable.target);
+      c_drawable.target = nullptr;
+    }
   }
 
   void sdl_backend::teardown() {
