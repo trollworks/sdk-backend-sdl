@@ -29,5 +29,7 @@ namespace tw::sdl {
 
   struct animation {
     entt::resource<rendering::animation> animation;
+    Uint32 frame_index;
+    float frame_time;
   };
 }

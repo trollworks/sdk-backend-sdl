@@ -11,12 +11,12 @@ namespace tw::sdl {
       auto& c_animation = animations.get<animation>(e_animation);
       auto& anim        = *c_animation.animation;
 
-      auto& current_frame = anim.frames[anim.frame_index];
-      anim.frame_time += delta_time;
+      auto& current_frame = anim.frames[c_animation.frame_index];
+      c_animation.frame_time += delta_time;
 
-      if (anim.frame_time >= current_frame.duration) {
-        anim.frame_time -= current_frame.duration;
-        anim.frame_index = (anim.frame_index + 1) % anim.frames.size();
+      if (c_animation.frame_time >= current_frame.duration) {
+        c_animation.frame_time -= current_frame.duration;
+        c_animation.frame_index = (c_animation.frame_index + 1) % anim.frames.size();
       }
     }
   }

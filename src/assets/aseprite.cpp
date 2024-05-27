@@ -116,9 +116,7 @@ namespace tw::sdl::assets::aseprite {
     }
 
     auto anim = std::make_shared<rendering::animation>();
-    anim->frame_index = 0;
-    anim->frame_time  = 0;
-    anim->texture     = image;
+    anim->texture = image;
 
     for (auto& [name, frame_meta] : metadata.at("frames").items()) {
       anim->frames.push_back(rendering::animation::frame{

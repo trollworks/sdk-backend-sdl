@@ -21,8 +21,6 @@ namespace tw::sdl::rendering {
 
     SDL_Texture* texture;
     std::vector<frame> frames;
-    Uint32 frame_index;
-    float frame_time;
 
     ~animation();
   };
