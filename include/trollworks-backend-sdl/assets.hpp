@@ -1,46 +1,56 @@
 #pragma once
 
-#include <unordered_map>
-#include <optional>
-#include <utility>
+#include <type_traits>
+#include <concepts>
+
+#include <filesystem>
 #include <memory>
-#include <string>
 
-#include <nlohmann/json.hpp>
+#include <trollworks.hpp>
+
 #include "./SDL.hpp"
+#include "./rendering/data.hpp"
 
-namespace tw::sdl::aseprite {
-  class spritesheet {
-    public:
-      struct frame {
-        SDL_Rect source;
-        float duration;
-      };
+namespace tw::sdl::assets {
+  namespace details {
+    class loader {
+      public:
+        virtual SDL_RWops* open(const std::filesystem::path& filepath);
+    };
 
-      spritesheet() = default;
-      spritesheet(const spritesheet&) = delete;
-      spritesheet(spritesheet&& other);
+    template <typename T>
+    concept loader_trait = std::is_base_of<loader, T>::value;
+  }
 
-      ~spritesheet();
+  template <details::loader_trait T, typename ... Args>
+  void register_asset_loader(Args ... args) {
+    entt::locator<details::loader>::emplace(T{std::forward<Args>(args)...});
+  }
 
-      SDL_Point get_size() const;
-      SDL_Texture* get_texture() const;
-      std::optional<frame> get_frame(const std::string& name) const;
+  SDL_RWops* open_asset(const std::filesystem::path& filepath);
 
-    private:
-      SDL_Texture* m_texture;
-      SDL_Point m_size;
-      std::unordered_map<std::string, frame> m_frames;
 
-    public:
+  namespace aseprite {
+    struct spritesheet {
       struct loader_type {
-        using result_type = std::shared_ptr<spritesheet>;
+        using result_type = std::shared_ptr<rendering::spritesheet>;
 
         result_type operator()(
           SDL_Renderer* renderer,
-          SDL_RWops* sheet_data,
-          const nlohmann::json& sheet_meta
+          const std::filesystem::path& path
         ) const;
       };
-  };
+    };
+
+    struct animation {
+      struct loader_type {
+        using result_type = std::shared_ptr<rendering::animation>;
+
+        result_type operator()(
+          SDL_Renderer* renderer,
+          const std::filesystem::path& path
+        ) const;
+      };
+    };
+  }
 }
