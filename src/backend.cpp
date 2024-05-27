@@ -7,6 +7,8 @@
 #include "../include/trollworks-backend-sdl/components.hpp"
 #include "../include/trollworks-backend-sdl/animator.hpp"
 #include "../include/trollworks-backend-sdl/input/manager.hpp"
+#include "../include/trollworks-backend-sdl/rendering/camera.hpp"
+#include "../include/trollworks-backend-sdl/rendering/system.hpp"
 
 namespace tw::sdl {
   sdl_backend::sdl_backend(const std::string& window_title)
@@ -193,22 +195,20 @@ namespace tw::sdl {
 
   void sdl_backend::render() {
     auto target = SDL_GetRenderTarget(m_renderer);
-    SDL_SetRenderTarget(m_renderer, m_application_surface);
-
-    SDL_SetRenderDrawColor(m_renderer, 25, 25, 25, 255);
-    SDL_RenderClear(m_renderer);
 
     auto& registry = scene_manager::main().registry();
 
-    auto cameras = registry.view<camera>();
-    auto backgrounds = registry.view<background, sprite, ordering>();
-    auto drawables = registry.view<transform, ordering>();
+    rendering::system::prerender_phase(m_renderer, registry);
 
-    backgrounds.use<ordering>();
-    drawables.use<ordering>();
+    SDL_SetRenderTarget(m_renderer, m_application_surface);
+    SDL_SetRenderDrawColor(m_renderer, 25, 25, 25, 255);
+    SDL_RenderClear(m_renderer);
+
+    auto cameras = registry.view<rendering::camera, ordering>();
+    cameras.use<ordering>();
 
     for (auto e_camera : cameras) {
-      auto& c_camera = cameras.get<camera>(e_camera);
+      auto& c_camera = cameras.get<rendering::camera>(e_camera);
 
       SDL_Rect viewport = {
         .x = static_cast<int>(std::floor(c_camera.viewport.x)),
@@ -218,91 +218,8 @@ namespace tw::sdl {
       };
       SDL_RenderSetViewport(m_renderer, &viewport);
 
-      for (auto e_background : backgrounds) {
-        auto& c_background = backgrounds.get<background>(e_background);
-        auto& c_sprite = backgrounds.get<sprite>(e_background);
-
-        if (c_background.stretch) {
-          SDL_FRect dest = {
-            .x = 0.0f,
-            .y = 0.0f,
-            .w = c_camera.viewport.w,
-            .h = c_camera.viewport.h
-          };
-
-          SDL_RenderCopyF(m_renderer, c_sprite.texture, &c_sprite.source, &dest);
-        }
-        else {
-          auto base_pos = c_camera.world_to_screen(c_background.offset);
-          auto cam_scale = c_camera.scale();
-          auto base_size = SDL_FPoint{
-            .x = c_sprite.source.w * cam_scale.x,
-            .y = c_sprite.source.h * cam_scale.y
-          };
-
-          Uint32 start_x = 0, end_x = 0;
-          Uint32 start_y = 0, end_y = 0;
-
-          if (c_background.repeat_x) {
-            start_x = static_cast<Uint32>(std::floor(-base_pos.x / base_size.x)) - 1;
-            end_x = static_cast<Uint32>(std::ceil((c_camera.viewport.w - base_pos.x) / base_size.x)) + 1;
-          }
-
-          if (c_background.repeat_y) {
-            start_y = static_cast<Uint32>(std::floor(-base_pos.y / base_size.y)) - 1;
-            end_y = static_cast<Uint32>(std::ceil((c_camera.viewport.h - base_pos.y) / base_size.y)) + 1;
-          }
-
-          for (auto x = start_x; x <= end_x; x++) {
-            for (auto y = start_y; y <= end_y; y++) {
-              SDL_FRect dest = {
-                .x = base_pos.x + (x * base_size.x),
-                .y = base_pos.y + (y * base_size.y),
-                .w = base_size.x,
-                .h = base_size.y
-              };
-
-              SDL_RenderCopyF(m_renderer, c_sprite.texture, &c_sprite.source, &dest);
-            }
-          }
-        }
-      }
-
-      for (auto e_drawable : drawables) {
-        auto& c_transform = drawables.get<transform>(e_drawable);
-
-        auto screen_pos = c_camera.world_to_screen(c_transform.position);
-        auto cam_scale = c_camera.scale();
-
-        if (registry.all_of<sprite>(e_drawable)) {
-          auto& c_sprite = registry.get<sprite>(e_drawable);
-
-          SDL_FRect dest = {
-            .x = screen_pos.x,
-            .y = screen_pos.y,
-            .w = c_sprite.source.w * c_transform.scale.x * cam_scale.x,
-            .h = c_sprite.source.h * c_transform.scale.y * cam_scale.y
-          };
-
-          SDL_RenderCopyF(m_renderer, c_sprite.texture, &c_sprite.source, &dest);
-        }
-        else if (registry.all_of<rect>(e_drawable)) {
-          auto& c_rect = registry.get<rect>(e_drawable);
-
-          SDL_FRect dest = {
-            .x = screen_pos.x,
-            .y = screen_pos.y,
-            .w = c_rect.rect.w * c_transform.scale.x * cam_scale.x,
-            .h = c_rect.rect.h * c_transform.scale.y * cam_scale.y
-          };
-
-          SDL_Color bak;
-          SDL_GetRenderDrawColor(m_renderer, &bak.r, &bak.g, &bak.b, &bak.a);
-          SDL_SetRenderDrawColor(m_renderer, c_rect.color.r, c_rect.color.g, c_rect.color.b, c_rect.color.a);
-          SDL_RenderFillRectF(m_renderer, &dest);
-          SDL_SetRenderDrawColor(m_renderer, bak.r, bak.g, bak.b, bak.a);
-        }
-      }
+      rendering::system::background_phase(m_renderer, registry, c_camera);
+      rendering::system::object_phase(m_renderer, registry, c_camera);
     }
 
     SDL_RenderSetViewport(m_renderer, nullptr);

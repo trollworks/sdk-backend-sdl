@@ -6,6 +6,11 @@
 #include "./trollworks-backend-sdl/assets.hpp"
 #include "./trollworks-backend-sdl/components.hpp"
 
+#include "./trollworks-backend-sdl/rendering/data.hpp"
+#include "./trollworks-backend-sdl/rendering/pipeline.hpp"
+#include "./trollworks-backend-sdl/rendering/camera.hpp"
+#include "./trollworks-backend-sdl/rendering/system.hpp"
+
 #include "./trollworks-backend-sdl/input/ui.hpp"
 #include "./trollworks-backend-sdl/input/state.hpp"
 #include "./trollworks-backend-sdl/input/actions.hpp"
