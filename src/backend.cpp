@@ -34,6 +34,8 @@ namespace tw::sdl {
   }
 
   void sdl_backend::setup(tw::controlflow&) {
+    SDL_SetMainReady();
+
     logging::logger().debug("Initialize SDL");
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
       logging::logger().error(
