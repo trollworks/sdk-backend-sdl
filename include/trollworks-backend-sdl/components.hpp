@@ -1,13 +1,17 @@
 #pragma once
 
-#include <vector>
-
 #include "./SDL.hpp"
+#include "./rendering/pipeline.hpp"
 
 namespace tw::sdl {
   struct transform {
     SDL_FPoint position;
     SDL_FPoint scale;
+  };
+
+  struct ordering {
+    Uint32 layer;
+    Uint32 order_in_layer;
   };
 
   struct background {
@@ -17,41 +21,13 @@ namespace tw::sdl {
     bool repeat_y;
   };
 
-  struct ordering {
-    Uint32 layer;
-    Uint32 order_in_layer;
-  };
-
-  struct sprite {
-    SDL_Texture* texture;
-    SDL_Rect source;
+  struct drawable {
+    SDL_FRect box;
+    SDL_Texture* target;
+    rendering::pipeline::node_ptr pipeline;
   };
 
   struct animation {
-    struct frame {
-      SDL_Texture* texture;
-      SDL_Rect source;
-      float frame_duration;
-    };
-
-    std::vector<frame> frames;
-    Uint32 frame_index;
-    float frame_time;
-  };
-
-  struct rect {
-    SDL_FRect rect;
-    SDL_Color color;
-  };
-
-  struct camera {
-    Sint32 depth;
-    SDL_FRect view;
-    SDL_FRect viewport;
-
-    SDL_FPoint center() const;
-    SDL_FPoint scale() const;
-    SDL_FPoint offset() const;
-    SDL_FPoint world_to_screen(SDL_FPoint world_pos) const;
+    entt::resource<rendering::animation> animation;
   };
 }
