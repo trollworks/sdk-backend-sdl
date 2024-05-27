@@ -13,7 +13,7 @@ This repository contains an SDL backend for the
 #include <trollworks.hpp>
 #include <trollworks-backend-sdl.hpp>
 
-int SDL_main(int argc, char** argv) {
+int main(int argc, char** argv) {
   auto backend = tw::sdl::sdl_backend("My SDL Window");
   auto loop = tw::game_loop{};
 
@@ -26,11 +26,6 @@ int SDL_main(int argc, char** argv) {
   return 0;
 }
 ```
-
-> **NB:** `SDL.h` define a macro to replace `main` with `SDL_main`. I don't like
-> this, so when including SDL I defined the macro `SDL_MAIN_HANDLED`. This means
-> that you have to call your main function `SDL_main`, the SDL library will
-> provide a proper entrypoint according to your platform.
 
 The backend provides 2 events:
 
