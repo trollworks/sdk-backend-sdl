@@ -15,6 +15,10 @@
       "url": "https://github.com/trollworks/shipp-nlohmann_json.git"
     },
     {
+      "name": "logfmtxx",
+      "url": "https://github.com/linkdd/logfmtxx.git"
+    },
+    {
       "name": "SDL2",
       "url": "https://github.com/trollworks/shipp-sdl.git"
     },
