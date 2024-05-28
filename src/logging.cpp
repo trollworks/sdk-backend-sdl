@@ -1,9 +1,11 @@
+#include <iostream>
+
 #include "../include/trollworks-backend-sdl/logging.hpp"
 
 namespace tw::sdl::logging {
   namespace details {
     void printer::operator()(const std::string& message) {
-      SDL_Log("%s", message.c_str());
+      std::cout << message << std::endl;
     }
   }
 
