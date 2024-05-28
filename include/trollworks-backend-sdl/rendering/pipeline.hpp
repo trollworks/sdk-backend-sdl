@@ -49,7 +49,6 @@ namespace tw::sdl::rendering {
   class pipeline {
     public:
       pipeline(SDL_Point size, node_ptr root);
-      ~pipeline();
 
       void allocate(SDL_Renderer* renderer);
       void deallocate();
