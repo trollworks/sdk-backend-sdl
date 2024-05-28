@@ -5,7 +5,6 @@
 #include "../include/trollworks-backend-sdl/backend.hpp"
 #include "../include/trollworks-backend-sdl/logging.hpp"
 #include "../include/trollworks-backend-sdl/components.hpp"
-#include "../include/trollworks-backend-sdl/animator.hpp"
 #include "../include/trollworks-backend-sdl/input/manager.hpp"
 #include "../include/trollworks-backend-sdl/rendering/camera.hpp"
 #include "../include/trollworks-backend-sdl/rendering/system.hpp"
@@ -121,7 +120,17 @@ namespace tw::sdl {
       std::exit(EXIT_FAILURE);
     }
 
-    job_manager::main().attach<animator>();
+    job_manager::main().attach(
+      [](float delta_time, void*, auto, auto) {
+        auto& registry = scene_manager::main().registry();
+        auto drawables = registry.view<drawable>();
+
+        for (auto e_drawable : drawables) {
+          auto& c_drawable = drawables.get<drawable>(e_drawable);
+          c_drawable.pipeline.update(delta_time);
+        }
+      }
+    );
 
     auto& registry = scene_manager::main().registry();
     registry.on_construct<drawable>().connect<&sdl_backend::on_construct_drawable>(this);
@@ -129,34 +138,13 @@ namespace tw::sdl {
   }
 
   void sdl_backend::on_construct_drawable(entt::registry& registry, entt::entity entity) {
-    SDL_RendererInfo info;
-    SDL_GetRendererInfo(m_renderer, &info);
-
     auto& c_drawable = registry.get<drawable>(entity);
-    c_drawable.target = SDL_CreateTexture(
-      m_renderer,
-      info.texture_formats[0], // there is always at least one format
-      SDL_TEXTUREACCESS_TARGET,
-      c_drawable.box.w,
-      c_drawable.box.h
-    );
-
-    if (c_drawable.target == nullptr) {
-      logging::logger().error(
-        "Could not create texture",
-        logfmtxx::field{"reason", SDL_GetError()},
-        logfmtxx::field{"entity", static_cast<ENTT_ID_TYPE>(entity)}
-      );
-    }
+    c_drawable.pipeline.allocate(m_renderer);
   }
 
   void sdl_backend::on_destroy_drawable(entt::registry& registry, entt::entity entity) {
     auto& c_drawable = registry.get<drawable>(entity);
-
-    if (c_drawable.target != nullptr) {
-      SDL_DestroyTexture(c_drawable.target);
-      c_drawable.target = nullptr;
-    }
+    c_drawable.pipeline.deallocate();
   }
 
   void sdl_backend::teardown() {
@@ -198,33 +186,11 @@ namespace tw::sdl {
   void sdl_backend::render() {
     auto target = SDL_GetRenderTarget(m_renderer);
 
-    auto& registry = scene_manager::main().registry();
-
-    rendering::system::prerender_phase(m_renderer, registry);
-
     SDL_SetRenderTarget(m_renderer, m_application_surface);
     SDL_SetRenderDrawColor(m_renderer, 25, 25, 25, 255);
     SDL_RenderClear(m_renderer);
 
-    auto cameras = registry.view<rendering::camera, ordering>();
-    cameras.use<ordering>();
-
-    for (auto e_camera : cameras) {
-      auto& c_camera = cameras.get<rendering::camera>(e_camera);
-
-      SDL_Rect viewport = {
-        .x = static_cast<int>(std::floor(c_camera.viewport.x)),
-        .y = static_cast<int>(std::floor(c_camera.viewport.y)),
-        .w = static_cast<int>(std::ceil(c_camera.viewport.w)),
-        .h = static_cast<int>(std::ceil(c_camera.viewport.h))
-      };
-      SDL_RenderSetViewport(m_renderer, &viewport);
-
-      rendering::system::background_phase(m_renderer, registry, c_camera);
-      rendering::system::object_phase(m_renderer, registry, c_camera);
-    }
-
-    SDL_RenderSetViewport(m_renderer, nullptr);
+    rendering::system::run(m_renderer);
 
     SDL_SetRenderTarget(m_renderer, target);
     SDL_RenderCopy(m_renderer, m_application_surface, nullptr, nullptr);

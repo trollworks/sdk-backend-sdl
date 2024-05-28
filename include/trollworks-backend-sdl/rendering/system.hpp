@@ -8,6 +8,9 @@
 namespace tw::sdl::rendering {
   class system {
     public:
+      static void run(SDL_Renderer* renderer);
+
+    private:
       static void prerender_phase(SDL_Renderer* renderer, entt::registry& registry);
       static void background_phase(SDL_Renderer* renderer, entt::registry& registry, camera& camera);
       static void object_phase(SDL_Renderer* renderer, entt::registry& registry, camera& camera);

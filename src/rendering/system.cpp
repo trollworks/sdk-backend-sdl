@@ -2,17 +2,38 @@
 #include "../../include/trollworks-backend-sdl/components.hpp"
 
 namespace tw::sdl::rendering {
+  void system::run(SDL_Renderer* renderer) {
+    auto& registry = scene_manager::main().registry();
+
+    rendering::system::prerender_phase(renderer, registry);
+
+    auto cameras = registry.view<rendering::camera, ordering>();
+    cameras.use<ordering>();
+
+    for (auto e_camera : cameras) {
+      auto& c_camera = cameras.get<rendering::camera>(e_camera);
+
+      SDL_Rect viewport = {
+        .x = static_cast<int>(std::floor(c_camera.viewport.x)),
+        .y = static_cast<int>(std::floor(c_camera.viewport.y)),
+        .w = static_cast<int>(std::ceil(c_camera.viewport.w)),
+        .h = static_cast<int>(std::ceil(c_camera.viewport.h))
+      };
+      SDL_RenderSetViewport(renderer, &viewport);
+
+      rendering::system::background_phase(renderer, registry, c_camera);
+      rendering::system::object_phase(renderer, registry, c_camera);
+    }
+
+    SDL_RenderSetViewport(renderer, nullptr);
+  }
+
   void system::prerender_phase(SDL_Renderer* renderer, entt::registry& registry) {
-    auto drawables   = registry.view<drawable, ordering>();
-    drawables.use<ordering>();
+    auto drawables = registry.view<drawable>();
 
     for (auto e_drawable : drawables) {
       auto& c_drawable = drawables.get<drawable>(e_drawable);
-      if (c_drawable.target == nullptr) continue;
-
-      SDL_SetRenderTarget(renderer, c_drawable.target);
-      SDL_RenderSetViewport(renderer, nullptr);
-      c_drawable.pipeline->apply(renderer);
+      c_drawable.pipeline.apply(renderer);
     }
   }
 
@@ -27,7 +48,7 @@ namespace tw::sdl::rendering {
     for (auto e_background : backgrounds) {
       auto& c_background = backgrounds.get<background>(e_background);
       auto& c_drawable   = backgrounds.get<drawable>(e_background);
-      if (c_drawable.target == nullptr) continue;
+      if (c_drawable.pipeline.target() != nullptr) continue;
 
       if (c_background.stretch) {
         SDL_FRect dest = {
@@ -37,14 +58,17 @@ namespace tw::sdl::rendering {
           .h = camera.viewport.h
         };
 
-        SDL_RenderCopyF(renderer, c_drawable.target, nullptr, &dest);
+        SDL_RenderCopyF(renderer, c_drawable.pipeline.target(), nullptr, &dest);
       }
       else {
+        int w = 0, h = 0;
+        SDL_QueryTexture(c_drawable.pipeline.target(), nullptr, nullptr, &w, &h);
+
         auto base_pos = camera.world_to_screen(c_background.offset);
         auto cam_scale = camera.scale();
         auto base_size = SDL_FPoint{
-          .x = c_drawable.box.w * cam_scale.x,
-          .y = c_drawable.box.h * cam_scale.y
+          .x = w * cam_scale.x,
+          .y = h * cam_scale.y
         };
 
         Uint32 start_x = 0, end_x = 0;
@@ -69,7 +93,7 @@ namespace tw::sdl::rendering {
               .h = base_size.y
             };
 
-            SDL_RenderCopyF(renderer, c_drawable.target, nullptr, &dest);
+            SDL_RenderCopyF(renderer, c_drawable.pipeline.target(), nullptr, &dest);
           }
         }
       }
@@ -87,7 +111,7 @@ namespace tw::sdl::rendering {
     for (auto e_object : objects) {
       auto& c_transform = objects.get<transform>(e_object);
       auto& c_drawable = objects.get<drawable>(e_object);
-      if (c_drawable.target == nullptr) continue;
+      if (c_drawable.pipeline.target() != nullptr) continue;
 
       auto screen_pos = camera.world_to_screen(c_transform.position);
       auto cam_scale = camera.scale();
@@ -95,14 +119,14 @@ namespace tw::sdl::rendering {
       SDL_FRect dest = {
         .x = screen_pos.x,
         .y = screen_pos.y,
-        .w = c_drawable.box.w * c_transform.scale.x * cam_scale.x,
-        .h = c_drawable.box.h * c_transform.scale.y * cam_scale.y
+        .w = c_transform.box.w * c_transform.scale.x * cam_scale.x,
+        .h = c_transform.box.h * c_transform.scale.y * cam_scale.y
       };
 
-      dest.x -= c_drawable.box.x * dest.w;
-      dest.y -= c_drawable.box.y * dest.h;
+      dest.x -= c_transform.box.x * dest.w;
+      dest.y -= c_transform.box.y * dest.h;
 
-      SDL_RenderCopyF(renderer, c_drawable.target, nullptr, &dest);
+      SDL_RenderCopyF(renderer, c_drawable.pipeline.target(), nullptr, &dest);
     }
   }
 }

@@ -6,6 +6,7 @@
 namespace tw::sdl {
   struct transform {
     SDL_FPoint position;
+    SDL_FRect box;
     SDL_FPoint scale;
   };
 
@@ -22,14 +23,6 @@ namespace tw::sdl {
   };
 
   struct drawable {
-    SDL_FRect box;
-    SDL_Texture* target;
-    rendering::pipeline::node_ptr pipeline;
-  };
-
-  struct animation {
-    entt::resource<rendering::animation> animation;
-    Uint32 frame_index;
-    float frame_time;
+    rendering::pipeline pipeline;
   };
 }
