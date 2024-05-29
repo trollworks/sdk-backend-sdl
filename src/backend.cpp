@@ -4,6 +4,7 @@
 
 #include "../include/trollworks-backend-sdl/backend.hpp"
 #include "../include/trollworks-backend-sdl/logging.hpp"
+#include "../include/trollworks-backend-sdl/assets.hpp"
 #include "../include/trollworks-backend-sdl/components.hpp"
 #include "../include/trollworks-backend-sdl/input/manager.hpp"
 #include "../include/trollworks-backend-sdl/rendering/camera.hpp"
@@ -148,6 +149,10 @@ namespace tw::sdl {
   }
 
   void sdl_backend::teardown() {
+    logging::logger().debug("Clear asset caches");
+    tw::asset_manager<assets::aseprite::spritesheet>::cache().clear();
+    tw::asset_manager<assets::aseprite::animation>::cache().clear();
+
     logging::logger().debug("Teardown Application Surface");
     SDL_DestroyTexture(m_application_surface);
 
