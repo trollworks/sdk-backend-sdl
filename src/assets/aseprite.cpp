@@ -8,7 +8,7 @@ namespace tw::sdl::assets::aseprite {
     SDL_Renderer* renderer,
     const std::filesystem::path& path
   ) const {
-    auto metadata_rw = open_asset(path);
+    auto metadata_rw = open_file(path);
     if (metadata_rw == nullptr) {
       logging::logger().error(
         "Could not open asset",
@@ -26,7 +26,7 @@ namespace tw::sdl::assets::aseprite {
     };
 
     auto image_path = (path.parent_path() / image_relative_path).lexically_normal();
-    auto image_rw = open_asset(image_path);
+    auto image_rw = open_file(image_path);
     if (image_rw == nullptr) {
       logging::logger().error(
         "Could not open image",
@@ -71,7 +71,7 @@ namespace tw::sdl::assets::aseprite {
     SDL_Renderer* renderer,
     const std::filesystem::path& path
   ) const {
-    auto metadata_rw = open_asset(path);
+    auto metadata_rw = open_file(path);
     if (metadata_rw == nullptr) {
       logging::logger().error(
         "Could not open asset",
@@ -89,7 +89,7 @@ namespace tw::sdl::assets::aseprite {
     };
 
     auto image_path = (path.parent_path() / image_relative_path).lexically_normal();
-    auto image_rw = open_asset(image_path);
+    auto image_rw = open_file(image_path);
     if (image_rw == nullptr) {
       logging::logger().error(
         "Could not open image",

@@ -12,28 +12,28 @@
 #include "./rendering/data.hpp"
 
 namespace tw::sdl::assets {
-  namespace details {
-    class loader {
-      public:
-        virtual SDL_RWops* open(const std::filesystem::path& filepath);
-    };
+  class file_loader {
+    public:
+      virtual SDL_RWops* open(const std::filesystem::path& filepath);
+  };
 
-    template <typename T>
-    concept loader_trait = std::is_base_of<loader, T>::value;
+  template <typename T>
+  concept file_loader_trait = std::is_base_of<file_loader, T>::value;
+
+  template <file_loader_trait T, typename ... Args>
+  void register_file_loader(Args ... args) {
+    entt::locator<file_loader>::emplace(T{std::forward<Args>(args)...});
   }
 
-  template <details::loader_trait T, typename ... Args>
-  void register_asset_loader(Args ... args) {
-    entt::locator<details::loader>::emplace(T{std::forward<Args>(args)...});
-  }
-
-  SDL_RWops* open_asset(const std::filesystem::path& filepath);
+  SDL_RWops* open_file(const std::filesystem::path& filepath);
 
 
   namespace aseprite {
     struct spritesheet {
+      using resource_type = rendering::spritesheet;
+
       struct loader_type {
-        using result_type = std::shared_ptr<rendering::spritesheet>;
+        using result_type = std::shared_ptr<resource_type>;
 
         result_type operator()(
           SDL_Renderer* renderer,
@@ -43,8 +43,10 @@ namespace tw::sdl::assets {
     };
 
     struct animation {
+      using resource_type = rendering::animation;
+
       struct loader_type {
-        using result_type = std::shared_ptr<rendering::animation>;
+        using result_type = std::shared_ptr<resource_type>;
 
         result_type operator()(
           SDL_Renderer* renderer,
