@@ -3,12 +3,12 @@
 namespace tw::sdl::rendering {
   mul_node::mul_node(std::initializer_list<node_ptr> nodes) : m_nodes(nodes) {}
 
-  void mul_node::on_allocate(SDL_Renderer* renderer, SDL_Point size) {
-    details::node::on_allocate(renderer, size);
+  void mul_node::on_allocate(SDL_Renderer* renderer, Uint32 format, SDL_Point size) {
+    details::node::on_allocate(renderer, format, size);
 
     if (target() != nullptr) {
       for (const auto& node : m_nodes) {
-        node->allocate(renderer, size);
+        node->allocate(renderer, format, size);
       }
     }
   }

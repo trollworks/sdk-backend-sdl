@@ -134,16 +134,16 @@ namespace tw::sdl {
     );
 
     auto& registry = scene_manager::main().registry();
-    registry.on_construct<drawable>().connect<&sdl_backend::on_construct_drawable>(this);
+    registry.on_construct<drawable>().connect<&sdl_backend::on_construct_drawable>(this, dpy.format);
     registry.on_destroy<drawable>().connect<&sdl_backend::on_destroy_drawable>(this);
 
     registry.on_construct<rendering::camera>().connect<&sdl_backend::on_construct_camera>(this);
     registry.on_construct<ordering>().connect<&sdl_backend::on_construct_ordering>(this);
   }
 
-  void sdl_backend::on_construct_drawable(entt::registry& registry, entt::entity entity) {
+  void sdl_backend::on_construct_drawable(entt::registry& registry, entt::entity entity, Uint32 format) {
     auto& c_drawable = registry.get<drawable>(entity);
-    c_drawable.pipeline.allocate(m_renderer);
+    c_drawable.pipeline.allocate(m_renderer, format);
   }
 
   void sdl_backend::on_destroy_drawable(entt::registry& registry, entt::entity entity) {

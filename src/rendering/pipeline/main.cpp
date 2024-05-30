@@ -7,9 +7,9 @@ namespace tw::sdl::rendering {
       return m_texture;
     }
 
-    void node::allocate(SDL_Renderer* renderer, SDL_Point size) {
+    void node::allocate(SDL_Renderer* renderer, Uint32 format, SDL_Point size) {
       if (m_texture == nullptr) {
-        on_allocate(renderer, size);
+        on_allocate(renderer, format, size);
       }
     }
 
@@ -39,10 +39,10 @@ namespace tw::sdl::rendering {
       }
     }
 
-    void node::on_allocate(SDL_Renderer* renderer, SDL_Point size) {
+    void node::on_allocate(SDL_Renderer* renderer, Uint32 format, SDL_Point size) {
       m_texture = SDL_CreateTexture(
         renderer,
-        SDL_PIXELFORMAT_ARGB8888,
+        format,
         SDL_TEXTUREACCESS_TARGET,
         size.x,
         size.y
@@ -66,8 +66,8 @@ namespace tw::sdl::rendering {
 
   pipeline::pipeline(SDL_Point size, node_ptr root) : m_size(size), m_root(root) {}
 
-  void pipeline::allocate(SDL_Renderer* renderer) {
-    m_root->allocate(renderer, m_size);
+  void pipeline::allocate(SDL_Renderer* renderer, Uint32 format) {
+    m_root->allocate(renderer, format, m_size);
   }
 
   void pipeline::deallocate() {

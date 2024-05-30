@@ -44,7 +44,7 @@ namespace tw::sdl {
       void render();
 
     private:
-      void on_construct_drawable(entt::registry&, entt::entity);
+      void on_construct_drawable(entt::registry&, entt::entity, Uint32 format);
       void on_destroy_drawable(entt::registry&, entt::entity);
 
       void on_construct_camera(entt::registry&, entt::entity);

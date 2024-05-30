@@ -19,13 +19,13 @@ namespace tw::sdl::rendering {
       public:
         SDL_Texture* target();
 
-        void allocate(SDL_Renderer* renderer, SDL_Point size);
+        void allocate(SDL_Renderer* renderer, Uint32 format, SDL_Point size);
         void deallocate();
         void update(float delta_time);
         void apply(SDL_Renderer* renderer);
 
       protected:
-        virtual void on_allocate(SDL_Renderer* renderer, SDL_Point size);
+        virtual void on_allocate(SDL_Renderer* renderer, Uint32 format, SDL_Point size);
         virtual void on_deallocate();
 
         virtual void on_update(float delta_time);
@@ -50,7 +50,7 @@ namespace tw::sdl::rendering {
     public:
       pipeline(SDL_Point size, node_ptr root);
 
-      void allocate(SDL_Renderer* renderer);
+      void allocate(SDL_Renderer* renderer, Uint32 format);
       void deallocate();
 
       void update(float delta_time);
@@ -118,7 +118,7 @@ namespace tw::sdl::rendering {
       blend_node(std::initializer_list<node_ptr> nodes);
 
     private:
-      void on_allocate(SDL_Renderer* renderer, SDL_Point size) override;
+      void on_allocate(SDL_Renderer* renderer, Uint32 format, SDL_Point size) override;
       void on_deallocate() override;
 
       void on_update(float delta_time) override;
@@ -133,7 +133,7 @@ namespace tw::sdl::rendering {
       add_node(std::initializer_list<node_ptr> nodes);
 
     private:
-      void on_allocate(SDL_Renderer* renderer, SDL_Point size) override;
+      void on_allocate(SDL_Renderer* renderer, Uint32 format, SDL_Point size) override;
       void on_deallocate() override;
 
       void on_update(float delta_time) override;
@@ -148,7 +148,7 @@ namespace tw::sdl::rendering {
       mul_node(std::initializer_list<node_ptr> nodes);
 
     private:
-      void on_allocate(SDL_Renderer* renderer, SDL_Point size) override;
+      void on_allocate(SDL_Renderer* renderer, Uint32 format, SDL_Point size) override;
       void on_deallocate() override;
 
       void on_update(float delta_time) override;
@@ -163,7 +163,7 @@ namespace tw::sdl::rendering {
       modulo_node(std::initializer_list<node_ptr> nodes);
 
     private:
-      void on_allocate(SDL_Renderer* renderer, SDL_Point size) override;
+      void on_allocate(SDL_Renderer* renderer, Uint32 format, SDL_Point size) override;
       void on_deallocate() override;
 
       void on_update(float delta_time) override;
