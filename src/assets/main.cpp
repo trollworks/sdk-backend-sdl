@@ -6,7 +6,12 @@ namespace tw::sdl::assets {
   }
 
   SDL_RWops* open_file(const std::filesystem::path& filepath) {
-    auto& loader = entt::locator<file_loader>::value_or<file_loader>();
-    return loader.open(filepath);
+    if (!entt::locator<file_loader>::has_value()) {
+      return file_loader{}.open(filepath);
+    }
+    else {
+      auto& loader = entt::locator<file_loader>::value();
+      return loader.open(filepath);
+    }
   }
 }
