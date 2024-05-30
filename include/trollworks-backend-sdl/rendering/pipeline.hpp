@@ -32,7 +32,7 @@ namespace tw::sdl::rendering {
         virtual void on_apply(SDL_Renderer* renderer);
 
       private:
-        SDL_Texture* m_texture;
+        SDL_Texture* m_texture{nullptr};
     };
 
     template <typename T>
