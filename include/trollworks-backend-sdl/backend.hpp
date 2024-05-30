@@ -47,6 +47,9 @@ namespace tw::sdl {
       void on_construct_drawable(entt::registry&, entt::entity);
       void on_destroy_drawable(entt::registry&, entt::entity);
 
+      void on_construct_camera(entt::registry&, entt::entity);
+      void on_construct_ordering(entt::registry&, entt::entity);
+
     private:
       std::string m_window_title;
       SDL_Point m_window_size{1366, 768};

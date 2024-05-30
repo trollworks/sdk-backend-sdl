@@ -136,6 +136,9 @@ namespace tw::sdl {
     auto& registry = scene_manager::main().registry();
     registry.on_construct<drawable>().connect<&sdl_backend::on_construct_drawable>(this);
     registry.on_destroy<drawable>().connect<&sdl_backend::on_destroy_drawable>(this);
+
+    registry.on_construct<rendering::camera>().connect<&sdl_backend::on_construct_camera>(this);
+    registry.on_construct<ordering>().connect<&sdl_backend::on_construct_ordering>(this);
   }
 
   void sdl_backend::on_construct_drawable(entt::registry& registry, entt::entity entity) {
@@ -146,6 +149,22 @@ namespace tw::sdl {
   void sdl_backend::on_destroy_drawable(entt::registry& registry, entt::entity entity) {
     auto& c_drawable = registry.get<drawable>(entity);
     c_drawable.pipeline.deallocate();
+  }
+
+  void sdl_backend::on_construct_camera(entt::registry& registry, entt::entity) {
+    registry.sort<rendering::camera>([](auto& lhs, auto& rhs) {
+      return lhs.depth < rhs.depth;
+    });
+  }
+
+  void sdl_backend::on_construct_ordering(entt::registry& registry, entt::entity) {
+    registry.sort<ordering>([](auto& lhs, auto& rhs) {
+      if (lhs.layer == rhs.layer) {
+        return lhs.order_in_layer < rhs.order_in_layer;
+      }
+
+      return lhs.layer < rhs.layer;
+    });
   }
 
   void sdl_backend::teardown() {

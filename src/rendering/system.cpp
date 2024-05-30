@@ -5,13 +5,12 @@ namespace tw::sdl::rendering {
   void system::run(SDL_Renderer* renderer) {
     auto& registry = scene_manager::main().registry();
 
-    rendering::system::prerender_phase(renderer, registry);
+    prerender_phase(renderer, registry);
 
-    auto cameras = registry.view<rendering::camera, ordering>();
-    cameras.use<ordering>();
+    auto cameras = registry.view<camera>();
 
     for (auto e_camera : cameras) {
-      auto& c_camera = cameras.get<rendering::camera>(e_camera);
+      auto& c_camera = cameras.get<camera>(e_camera);
 
       SDL_Rect viewport = {
         .x = static_cast<int>(std::floor(c_camera.viewport.x)),
@@ -21,8 +20,8 @@ namespace tw::sdl::rendering {
       };
       SDL_RenderSetViewport(renderer, &viewport);
 
-      rendering::system::background_phase(renderer, registry, c_camera);
-      rendering::system::object_phase(renderer, registry, c_camera);
+      background_phase(renderer, registry, c_camera);
+      object_phase(renderer, registry, c_camera);
     }
 
     SDL_RenderSetViewport(renderer, nullptr);
