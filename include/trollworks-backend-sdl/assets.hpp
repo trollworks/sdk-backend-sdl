@@ -22,7 +22,7 @@ namespace tw::sdl::assets {
 
   template <file_loader_trait T, typename ... Args>
   void register_file_loader(Args ... args) {
-    entt::locator<file_loader>::emplace(T{std::forward<Args>(args)...});
+    entt::locator<file_loader>::emplace<T>(std::forward<Args>(args)...);
   }
 
   SDL_RWops* open_file(const std::filesystem::path& filepath);
