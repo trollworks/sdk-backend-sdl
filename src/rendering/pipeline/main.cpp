@@ -58,6 +58,7 @@ namespace tw::sdl::rendering {
 
     void node::on_deallocate() {
       SDL_DestroyTexture(m_texture);
+      m_texture = nullptr;
     }
 
     void node::on_update(float delta_time) {}
