@@ -14,7 +14,7 @@ namespace tw::sdl::assets::aseprite {
         "Could not open asset",
         logfmtxx::field{"asset-type", "aseprite::spritesheet"},
         logfmtxx::field{"reason", SDL_GetError()},
-        logfmtxx::field{"path.metadata", path.c_str()}
+        logfmtxx::field{"path.metadata", path.string().c_str()}
       );
       return nullptr;
     }
@@ -32,8 +32,8 @@ namespace tw::sdl::assets::aseprite {
         "Could not open image",
         logfmtxx::field{"asset-type", "aseprite::spritesheet"},
         logfmtxx::field{"reason", SDL_GetError()},
-        logfmtxx::field{"path.metadata", path.c_str()},
-        logfmtxx::field{"path.image", image_relative_path.c_str()}
+        logfmtxx::field{"path.metadata", path.string().c_str()},
+        logfmtxx::field{"path.image", image_relative_path.string().c_str()}
       );
 
       return nullptr;
@@ -45,8 +45,8 @@ namespace tw::sdl::assets::aseprite {
         "Could not load image",
         logfmtxx::field{"asset-type", "aseprite::spritesheet"},
         logfmtxx::field{"reason", IMG_GetError()},
-        logfmtxx::field{"path.metadata", path.c_str()},
-        logfmtxx::field{"path.image", image_relative_path.c_str()}
+        logfmtxx::field{"path.metadata", path.string().c_str()},
+        logfmtxx::field{"path.image", image_relative_path.string().c_str()}
       );
 
       return nullptr;
@@ -77,7 +77,7 @@ namespace tw::sdl::assets::aseprite {
         "Could not open asset",
         logfmtxx::field{"asset-type", "aseprite::animation"},
         logfmtxx::field{"reason", SDL_GetError()},
-        logfmtxx::field{"path.metadata", path.c_str()}
+        logfmtxx::field{"path.metadata", path.string().c_str()}
       );
       return nullptr;
     }
@@ -95,8 +95,8 @@ namespace tw::sdl::assets::aseprite {
         "Could not open image",
         logfmtxx::field{"asset-type", "aseprite::animation"},
         logfmtxx::field{"reason", SDL_GetError()},
-        logfmtxx::field{"path.metadata", path.c_str()},
-        logfmtxx::field{"path.image", image_relative_path.c_str()}
+        logfmtxx::field{"path.metadata", path.string().c_str()},
+        logfmtxx::field{"path.image", image_relative_path.string().c_str()}
       );
 
       return nullptr;
@@ -108,8 +108,8 @@ namespace tw::sdl::assets::aseprite {
         "Could not load image",
         logfmtxx::field{"asset-type", "aseprite::animation"},
         logfmtxx::field{"reason", IMG_GetError()},
-        logfmtxx::field{"path.metadata", path.c_str()},
-        logfmtxx::field{"path.image", image_relative_path.c_str()}
+        logfmtxx::field{"path.metadata", path.string().c_str()},
+        logfmtxx::field{"path.image", image_relative_path.string().c_str()}
       );
 
       return nullptr;

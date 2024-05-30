@@ -2,7 +2,7 @@
 
 namespace tw::sdl::assets {
   SDL_RWops* file_loader::open(const std::filesystem::path& filepath) {
-    return SDL_RWFromFile(filepath.c_str(), "rb");
+    return SDL_RWFromFile(filepath.string().c_str(), "rb");
   }
 
   SDL_RWops* open_file(const std::filesystem::path& filepath) {
