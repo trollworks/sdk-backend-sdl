@@ -40,12 +40,9 @@ namespace tw::sdl::rendering {
     }
 
     void node::on_allocate(SDL_Renderer* renderer, SDL_Point size) {
-      SDL_RendererInfo info;
-      SDL_GetRendererInfo(renderer, &info);
-
       m_texture = SDL_CreateTexture(
         renderer,
-        info.texture_formats[0], // there is always at least one format
+        SDL_PIXELFORMAT_ARGB8888,
         SDL_TEXTUREACCESS_TARGET,
         size.x,
         size.y
