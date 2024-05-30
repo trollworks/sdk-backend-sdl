@@ -44,7 +44,7 @@ namespace tw::sdl {
       void render();
 
     private:
-      void on_construct_drawable(entt::registry&, entt::entity, Uint32 format);
+      void on_construct_drawable(entt::registry&, entt::entity);
       void on_destroy_drawable(entt::registry&, entt::entity);
 
       void on_construct_camera(entt::registry&, entt::entity);
@@ -55,6 +55,7 @@ namespace tw::sdl {
       SDL_Point m_window_size{1366, 768};
       bool m_window_fullscreen{false};
 
+      SDL_DisplayMode m_dpy;
       SDL_Window* m_window{nullptr};
       SDL_Renderer* m_renderer{nullptr};
       SDL_Texture* m_application_surface{nullptr};

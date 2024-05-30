@@ -60,8 +60,7 @@ namespace tw::sdl {
     }
 
     logging::logger().debug("Detect Desktop Display Mode");
-    SDL_DisplayMode dpy;
-    if (SDL_GetDesktopDisplayMode(0, &dpy) != 0) {
+    if (SDL_GetDesktopDisplayMode(0, &m_dpy) != 0) {
       logging::logger().error(
         "Could not get desktop display mode",
         logfmtxx::field{"reason", SDL_GetError()}
@@ -69,8 +68,8 @@ namespace tw::sdl {
       std::exit(EXIT_FAILURE);
     }
 
-    int window_width = m_window_fullscreen ? dpy.w : m_window_size.x;
-    int window_height = m_window_fullscreen ? dpy.h : m_window_size.y;
+    int window_width = m_window_fullscreen ? m_dpy.w : m_window_size.x;
+    int window_height = m_window_fullscreen ? m_dpy.h : m_window_size.y;
 
     logging::logger().debug("Create Window");
     m_window = SDL_CreateWindow(
@@ -108,7 +107,7 @@ namespace tw::sdl {
     logging::logger().debug("Create Application Surface");
     m_application_surface = SDL_CreateTexture(
       m_renderer,
-      dpy.format,
+      m_dpy.format,
       SDL_TEXTUREACCESS_TARGET,
       window_width,
       window_height
@@ -134,16 +133,16 @@ namespace tw::sdl {
     );
 
     auto& registry = scene_manager::main().registry();
-    registry.on_construct<drawable>().connect<&sdl_backend::on_construct_drawable>(this, dpy.format);
+    registry.on_construct<drawable>().connect<&sdl_backend::on_construct_drawable>(this);
     registry.on_destroy<drawable>().connect<&sdl_backend::on_destroy_drawable>(this);
 
     registry.on_construct<rendering::camera>().connect<&sdl_backend::on_construct_camera>(this);
     registry.on_construct<ordering>().connect<&sdl_backend::on_construct_ordering>(this);
   }
 
-  void sdl_backend::on_construct_drawable(entt::registry& registry, entt::entity entity, Uint32 format) {
+  void sdl_backend::on_construct_drawable(entt::registry& registry, entt::entity entity) {
     auto& c_drawable = registry.get<drawable>(entity);
-    c_drawable.pipeline.allocate(m_renderer, format);
+    c_drawable.pipeline.allocate(m_renderer, m_dpy.format);
   }
 
   void sdl_backend::on_destroy_drawable(entt::registry& registry, entt::entity entity) {
