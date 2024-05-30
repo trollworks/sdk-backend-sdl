@@ -6,17 +6,21 @@ namespace tw::sdl::rendering {
   {}
 
   void animation_node::on_update(float delta_time) {
-    auto& current_frame = m_animation->frames[m_frame_index];
-    m_frame_time += delta_time;
+    if (m_animation) {
+      auto& current_frame = m_animation->frames[m_frame_index];
+      m_frame_time += delta_time;
 
-    if (m_frame_time >= current_frame.duration) {
-      m_frame_time -= current_frame.duration;
-      m_frame_index = (m_frame_index + 1) % m_animation->frames.size();
+      if (m_frame_time >= current_frame.duration) {
+        m_frame_time -= current_frame.duration;
+        m_frame_index = (m_frame_index + 1) % m_animation->frames.size();
+      }
     }
   }
 
   void animation_node::on_apply(SDL_Renderer* renderer) {
-    auto& frame = m_animation->frames[m_frame_index];
-    SDL_RenderCopy(renderer, m_animation->texture, &frame.source, nullptr);
+    if (m_animation) {
+      auto& frame = m_animation->frames[m_frame_index];
+      SDL_RenderCopy(renderer, m_animation->texture, &frame.source, nullptr);
+    }
   }
 }
