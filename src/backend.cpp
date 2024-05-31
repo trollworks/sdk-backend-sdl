@@ -86,6 +86,8 @@ namespace tw::sdl {
       std::exit(EXIT_FAILURE);
     }
 
+    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengles2");
+
     logging::logger().debug("Create Renderer");
     m_renderer = SDL_CreateRenderer(
       m_window,
@@ -103,6 +105,16 @@ namespace tw::sdl {
     }
 
     SDL_RenderSetLogicalSize(m_renderer, m_window_size.x, m_window_size.y);
+
+    SDL_RendererInfo info;
+    SDL_GetRendererInfo(m_renderer, &info);
+    if (std::string{info.name} != "opengles2") {
+      logging::logger().error(
+        "Could not create renderer with OpenGL ES 2.0",
+        logfmtxx::field{"renderer", info.name}
+      );
+      std::exit(EXIT_FAILURE);
+    }
 
     logging::logger().debug("Create Application Surface");
     m_application_surface = SDL_CreateTexture(
