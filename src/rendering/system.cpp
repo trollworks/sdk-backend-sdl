@@ -47,7 +47,7 @@ namespace tw::sdl::rendering {
     for (auto e_background : backgrounds) {
       auto& c_background = backgrounds.get<background>(e_background);
       auto& c_drawable   = backgrounds.get<drawable>(e_background);
-      if (c_drawable.pipeline.target() != nullptr) continue;
+      if (c_drawable.pipeline.target() == nullptr) continue;
 
       if (c_background.stretch) {
         SDL_FRect dest = {
@@ -110,7 +110,7 @@ namespace tw::sdl::rendering {
     for (auto e_object : objects) {
       auto& c_transform = objects.get<transform>(e_object);
       auto& c_drawable = objects.get<drawable>(e_object);
-      if (c_drawable.pipeline.target() != nullptr) continue;
+      if (c_drawable.pipeline.target() == nullptr) continue;
 
       auto screen_pos = camera.world_to_screen(c_transform.position);
       auto cam_scale = camera.scale();
